@@ -1,0 +1,15 @@
+GET http://localhost:3003/api/blogs
+
+###
+DELETE http://localhost:3003/api/blogs/:id
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "New test",
+  "author": "Me again",
+  "url": "",
+  "likes": 2
+}
