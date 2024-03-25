@@ -13,3 +13,14 @@ Content-Type: application/json
   "url": "",
   "likes": 5
 }
+
+###
+PUT http://localhost:3003/api/blogs/660177961b2419b6fd5078c8
+Content-Type: application/json
+
+{
+  "title": "Better test yearlier than later",
+  "author": "John Smith",
+  "url": "",
+  "likes": 4
+}
