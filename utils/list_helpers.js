@@ -41,5 +41,28 @@ const getTopAuthor = (blogs) => {
     return topAuthor;
 }
 
-module.exports = {dummy, getTotalLikes, getFavoriteBlog, getTopAuthor}
+const getAuthorWithMostLikes = (blogs) => {
+    let authors = {}
+    let authorWithMostLikes = {author: '', likes: 0}
+
+    for (let i = 0; i < blogs.length; i++) {
+        let currAuthorName = blogs[i].author;
+        let currAuthorLikes = blogs[i].likes;
+
+        if (!authors[currAuthorName]) {
+            authors[currAuthorName] = currAuthorLikes;
+        } else {
+            authors[currAuthorName] += currAuthorLikes;
+        }
+
+        if (authors[currAuthorName] > authorWithMostLikes.likes) {
+            authorWithMostLikes.author = currAuthorName;
+            authorWithMostLikes.likes = authors[currAuthorName];
+        }
+    }
+
+    return authorWithMostLikes;
+}
+
+module.exports = {dummy, getTotalLikes, getFavoriteBlog, getTopAuthor, getAuthorWithMostLikes}
 
