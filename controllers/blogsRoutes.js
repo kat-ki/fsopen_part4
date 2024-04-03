@@ -22,8 +22,11 @@ blogsRouter.get('/:id', async (request, response, next) => {
 blogsRouter.post('/', async (request, response, next) => {
     const blog = new Blog(request.body)
     try {
-        const addedNewBlog = await blog.save()
-        response.status(201).json(addedNewBlog)
+        if (!blog.likes) {
+            blog.likes = 0
+        }
+        const newBlog = await blog.save()
+        response.status(201).json(newBlog)
     } catch (error) {
         next(error)
     }

@@ -36,7 +36,7 @@ test('unique identifier property is named id, not _id', async () => {
     assert.strictEqual(isEveryIdCorrect, true)
 })
 
-test.only('new blog is created', async () => {
+test('new blog is created', async () => {
     const newBlog = {
         title: 'Relax',
         author: 'Anna Bulk',
@@ -55,6 +55,24 @@ test.only('new blog is created', async () => {
 
     assert.strictEqual(response.body.length, initBlogs.length + 1)
     assert(blogContent.includes('Relax'))
+})
+
+test.only('likes property is there, otherwise 0', async () => {
+    const newBlog = {
+        title: 'Refactoring makes clean',
+        author: 'Andy Smith',
+        url: ''
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const newBlogAdded = response.body.find(blog => blog.title === newBlog.title)
+    assert.strictEqual(newBlogAdded.likes, 0)
 })
 after(async () => {
     await mongoose.connection.close()
