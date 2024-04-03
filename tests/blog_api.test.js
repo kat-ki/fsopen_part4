@@ -29,6 +29,7 @@ test('correct amount of blog posts is returned', async () => {
     assert.strictEqual(response.body.length, initBlogs.length)
 })
 
+
 after(async () => {
     await mongoose.connection.close()
 })
