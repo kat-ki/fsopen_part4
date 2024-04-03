@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3003/api/blogs/660177961b2419b6fd5078c8
+PUT http://localhost:3003/api/blogs/:id
 Content-Type: application/json
 
 {
