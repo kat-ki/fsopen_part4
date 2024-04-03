@@ -19,15 +19,14 @@ blogsRouter.get('/:id', async (request, response, next) => {
     }
 })
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', async (request, response, next) => {
     const blog = new Blog(request.body)
-    console.log(blog)
-
-    blog
-        .save()
-        .then(result => {
-            response.status(201).json(result)
-        })
+    try {
+        const addedNewBlog = await blog.save()
+        response.status(201).json(addedNewBlog)
+    } catch (error) {
+        next(error)
+    }
 })
 
 blogsRouter.delete('/:id', (request, response, next) => {

@@ -35,6 +35,27 @@ test('unique identifier property is named id, not _id', async () => {
 
     assert.strictEqual(isEveryIdCorrect, true)
 })
+
+test.only('new blog is created', async () => {
+    const newBlog = {
+        title: 'Relax',
+        author: 'Anna Bulk',
+        url: '',
+        likes: 12
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const blogContent = response.body.map(blog => blog.title)
+
+    assert.strictEqual(response.body.length, initBlogs.length + 1)
+    assert(blogContent.includes('Relax'))
+})
 after(async () => {
     await mongoose.connection.close()
 })
