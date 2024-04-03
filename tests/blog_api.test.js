@@ -29,7 +29,12 @@ test('correct amount of blog posts is returned', async () => {
     assert.strictEqual(response.body.length, initBlogs.length)
 })
 
+test.only('unique identifier property is named id, not _id', async () => {
+    const response = await api.get('/api/blogs')
+    const isEveryIdCorrect = response.body.map(el => el.hasOwnProperty('id')).every(id => id === true)
 
+    assert.strictEqual(isEveryIdCorrect, true)
+})
 after(async () => {
     await mongoose.connection.close()
 })

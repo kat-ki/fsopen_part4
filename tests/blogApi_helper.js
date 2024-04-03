@@ -12,6 +12,12 @@ const initBlogs = [
         "author": "Abra Kadabra",
         "url": "",
         "likes": 8
+    },
+    {
+        "title": "Hard work pays off",
+        "author": "Lincoln",
+        "url": "",
+        "likes": 6
     }
 ]
 
