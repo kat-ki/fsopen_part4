@@ -57,7 +57,7 @@ test('new blog is created', async () => {
     assert(blogContent.includes('Relax'))
 })
 
-test.only('likes property is there, otherwise 0', async () => {
+test('likes property is there, otherwise 0', async () => {
     const newBlog = {
         title: 'Refactoring makes clean',
         author: 'Andy Smith',
