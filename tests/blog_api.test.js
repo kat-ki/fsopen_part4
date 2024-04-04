@@ -1,4 +1,4 @@
-const {test, beforeEach, after} = require('node:test')
+const {test, beforeEach, after, describe} = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -6,9 +6,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const initBlogs = require('./blogApi_helper')
-const {response} = require("express");
 const api = supertest(app)
-
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -18,76 +16,70 @@ beforeEach(async () => {
 
     await Promise.all(blogElementPromises)
 })
-test('blog posts are returned in JSON format', async () => {
-    await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-})
-test('correct amount of blog posts is returned', async () => {
-    const response = await api.get('/api/blogs')
+describe('/GET', () => {
+    test('blogs should return a list of blog posts in JSON format', async () => {
+        await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+    })
+    test('blogs should return correct amount of blog posts', async () => {
+        const response = await api.get('/api/blogs')
 
-    assert.strictEqual(response.body.length, initBlogs.length)
-})
+        assert.strictEqual(response.body.length, initBlogs.length)
+    })
+    test('blogs should return a list of blogs with each blog having a unique identifier named id, not _id', async () => {
+        const response = await api.get('/api/blogs')
+        const isEveryIdCorrect = response.body.map(el => el.hasOwnProperty('id')).every(id => id === true)
 
-test('unique identifier property is named id, not _id', async () => {
-    const response = await api.get('/api/blogs')
-    const isEveryIdCorrect = response.body.map(el => el.hasOwnProperty('id')).every(id => id === true)
-
-    assert.strictEqual(isEveryIdCorrect, true)
-})
-
-test('new blog is created', async () => {
-    const newBlog = {
-        title: 'Relax',
-        author: 'Anna Bulk',
-        url: '',
-        likes: 12
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-
-    const response = await api.get('/api/blogs')
-    const blogContent = response.body.map(blog => blog.title)
-
-    assert.strictEqual(response.body.length, initBlogs.length + 1)
-    assert(blogContent.includes('Relax'))
+        assert.strictEqual(isEveryIdCorrect, true)
+    })
 })
 
-test('likes property is there, otherwise 0', async () => {
-    const newBlog = {
-        title: 'Refactoring makes clean',
-        author: 'Andy Smith',
-        url: ''
-    }
+describe('/POST', () => {
+    test('blogs should create a new blog', async () => {
+        const newBlog = {
+            title: 'Relax', author: 'Anna Bulk', url: 'http', likes: 12
+        }
 
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const newBlogAdded = response.body.find(blog => blog.title === newBlog.title)
-    assert.strictEqual(newBlogAdded.likes, 0)
-})
+        const response = await api.get('/api/blogs')
+        const blogContent = response.body.map(blog => blog.title)
 
-test.only('title or url properties is missing, backend responds with "400 Bad Request"', async () => {
-    const newBlog = {
-        author: 'Jack Sparrow',
-        url: '',
-        likes: 3
-    }
+        assert.strictEqual(response.body.length, initBlogs.length + 1)
+        assert(blogContent.includes('Relax'))
+    })
+    test('blogs should create a new blog and add property named likes if not specified', async () => {
+        const newBlog = {
+            title: 'Refactoring makes clean', author: 'Andy Smith', url: 'https://'
+        }
 
-    const response = await api
-        .post('/api/blogs')
-        .send(newBlog)
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
-    assert.strictEqual(response.statusCode, 400);
+        const response = await api.get('/api/blogs');
+        const newBlogAdded = response.body.find(blog => blog.title === newBlog.title)
+        assert.strictEqual(newBlogAdded.likes, 0)
+    })
+    test('blogs should respond with an error if title or URL are not specified', async () => {
+        const newBlog = {
+            author: 'Jack Sparrow', url: '', likes: 3
+        }
+
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+
+        assert.strictEqual(response.statusCode, 400);
+    })
 })
 after(async () => {
     await mongoose.connection.close()
