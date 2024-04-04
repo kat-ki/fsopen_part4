@@ -6,6 +6,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const initBlogs = require('./blogApi_helper')
+const {response} = require("express");
 const api = supertest(app)
 
 
@@ -73,6 +74,20 @@ test('likes property is there, otherwise 0', async () => {
     const response = await api.get('/api/blogs')
     const newBlogAdded = response.body.find(blog => blog.title === newBlog.title)
     assert.strictEqual(newBlogAdded.likes, 0)
+})
+
+test.only('title or url properties is missing, backend responds with "400 Bad Request"', async () => {
+    const newBlog = {
+        author: 'Jack Sparrow',
+        url: '',
+        likes: 3
+    }
+
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+
+    assert.strictEqual(response.statusCode, 400);
 })
 after(async () => {
     await mongoose.connection.close()
