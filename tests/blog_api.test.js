@@ -82,7 +82,7 @@ describe('/POST', () => {
     })
 })
 describe('/DELETE', () => {
-    test('/:id should delete a single blog', async () => {
+    test('blogs/:id should delete a single blog', async () => {
         const blogsBeforeDeleting = await blogsInDB()
         const blogToDelete = blogsBeforeDeleting[0]
 
@@ -95,6 +95,23 @@ describe('/DELETE', () => {
 
         assert.strictEqual(blogsAfterDeleting.length, initBlogs.length - 1)
         assert(!contents.includes(blogToDelete.title))
+    })
+})
+
+describe('/PUT', () => {
+    test('blogs/:id should update likes of a blog', async () => {
+        const allBlogs = await blogsInDB()
+        const blogToUpdate = allBlogs[0]
+        const newLikesCount = 22
+
+        const response = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send({likes: newLikesCount})
+            .expect(200)
+
+        const allBlogsUpdated = await blogsInDB()
+
+        assert.strictEqual(allBlogsUpdated[0].likes, newLikesCount)
     })
 })
 after(async () => {
