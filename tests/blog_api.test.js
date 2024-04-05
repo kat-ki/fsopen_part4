@@ -104,7 +104,7 @@ describe('/PUT', () => {
         const blogToUpdate = allBlogs[0]
         const newLikesCount = 22
 
-        const response = await api
+        await api
             .put(`/api/blogs/${blogToUpdate.id}`)
             .send({likes: newLikesCount})
             .expect(200)
