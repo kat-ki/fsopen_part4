@@ -5,7 +5,7 @@ const supertest = require('supertest')
 
 const app = require('../app')
 const Blog = require('../models/blog')
-const initBlogs = require('./blogApi_helper')
+const {initBlogs, blogsInDB} = require('./blogApi_helper')
 const api = supertest(app)
 
 beforeEach(async () => {
@@ -69,7 +69,7 @@ describe('/POST', () => {
         const newBlogAdded = response.body.find(blog => blog.title === newBlog.title)
         assert.strictEqual(newBlogAdded.likes, 0)
     })
-    test('blogs should respond with an error if title or URL are not specified', async () => {
+    test('blogs should respond with an error if title or URL is not specified', async () => {
         const newBlog = {
             author: 'Jack Sparrow', url: '', likes: 3
         }
@@ -79,6 +79,22 @@ describe('/POST', () => {
             .send(newBlog)
 
         assert.strictEqual(response.statusCode, 400);
+    })
+})
+describe('/DELETE', () => {
+    test('/:id should delete a single blog', async () => {
+        const blogsBeforeDeleting = await blogsInDB()
+        const blogToDelete = blogsBeforeDeleting[0]
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+
+        const blogsAfterDeleting = await blogsInDB()
+        const contents = blogsAfterDeleting.map(blog => blog.title)
+
+        assert.strictEqual(blogsAfterDeleting.length, initBlogs.length - 1)
+        assert(!contents.includes(blogToDelete.title))
     })
 })
 after(async () => {
