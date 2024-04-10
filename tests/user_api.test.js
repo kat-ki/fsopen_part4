@@ -18,7 +18,7 @@ describe('/POST', () => {
     test('should fail to create a new user with invalid credentials', async () => {
         const usersAtStart = await api.get('/api/users')
         const newUser = {
-            username: 'lopa',
+            username: 'lo',
             name: 'Lola Trust',
             passwordHash: 'pswd'
         }

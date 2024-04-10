@@ -8,10 +8,11 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Better test earlier than later",
-  "author": "John Smith",
-  "url": "",
-  "likes": 5
+  "title": "Node",
+  "author": "anyone",
+  "url": "https://something.com",
+  "likes": 8,
+  "userId": "66164bedf919e7cdfa96b1f2"
 }
 
 ###
