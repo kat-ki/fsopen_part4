@@ -6,12 +6,13 @@ DELETE http://localhost:3003/api/blogs/:id
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmdvIiwiaWQiOiI2NjE2NGJlZGY5MTllN2NkZmE5NmIxZjIiLCJpYXQiOjE3MTI3NTY3NDZ9.re3BJdAXQupMRq4ILSu0aoqet8lDxssDicV5--BvgC0
 
 {
-  "title": "Node",
-  "author": "anyone",
+  "title": "API",
+  "author": "mango",
   "url": "https://something.com",
-  "likes": 8,
+  "likes": 1,
   "userId": "66164bedf919e7cdfa96b1f2"
 }
 
