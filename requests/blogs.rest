@@ -26,21 +26,3 @@ Content-Type: application/json
   "likes": 4
 }
 
-###
-POST http://localhost:3003/api/users
-Content-Type: application/json
-
-{
-  "username": "ma",
-  "name": "Manfred Look",
-  "password": "my-password"
-}
-
-###
-POST http://localhost:3003/api/login
-Content-Type: application/json
-
-{
-  "username": "mango",
-  "password": "my-password"
-}
