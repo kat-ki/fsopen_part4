@@ -26,8 +26,8 @@ blogsRouter.post('/', async (request, response, next) => {
     if (!decodedToken.id) {
         return response.status(401).json({error: 'token invalid'})
     }
-    const user = await User.findById(decodedToken.id)
 
+    const user = await User.findById(decodedToken.id)
     const blog = new Blog({...request.body, user: user._id})
     try {
         if (!blog.likes) {
@@ -38,7 +38,6 @@ blogsRouter.post('/', async (request, response, next) => {
         }
 
         const newBlog = await blog.save()
-
         user.blogs = user.blogs.concat(newBlog._id)
         await user.save()
 
@@ -50,6 +49,17 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
     try {
+        const decodedToken = jwt.verify(request.token, process.env.SECRETTOKEN)
+        if (!decodedToken.id) {
+            return response.status(401).json({error: 'token invalid'})
+        }
+        const user = await User.findById(decodedToken.id)
+        const blog = await Blog.findById(request.params.id)
+
+        if (blog.user.toString() !== user._id.toString()) {
+            return response.status(401).json({error: 'only the creator can delete this blog'})
+        }
+
         await Blog.findByIdAndDelete(request.params.id)
         response.status(204).end()
     } catch (error) {
