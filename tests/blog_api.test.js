@@ -8,6 +8,7 @@ const Blog = require('../models/blog')
 const {initBlogs, blogsInDB} = require('./blogApi_helper')
 const api = supertest(app)
 
+
 beforeEach(async () => {
     await Blog.deleteMany({})
 
@@ -37,13 +38,30 @@ describe('/GET', () => {
 })
 
 describe('/POST', () => {
+    let token = '';
+    beforeEach(async () => {
+        const userCredentials = {
+            username: 'johnk',
+            password: 'my-password'
+        }
+
+        const loggedUser = await api
+            .post('/api/login')
+            .send(userCredentials)
+        token = loggedUser.body.token
+    })
+
     test('blogs should create a new blog', async () => {
         const newBlog = {
-            title: 'Relax', author: 'Anna Bulk', url: 'http', likes: 12
+            title: 'Relax',
+            author: 'Anna Bulk',
+            url: 'http',
+            likes: 12
         }
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -61,6 +79,7 @@ describe('/POST', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -76,18 +95,44 @@ describe('/POST', () => {
 
         const response = await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
 
         assert.strictEqual(response.statusCode, 400);
     })
+    test('blogs should respond with an error if token is not provided', async () => {
+        const newBlog = {
+            author: 'Jack Sparrow', url: '', likes: 3
+        }
+
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+
+        assert.strictEqual(response.statusCode, 401);
+    })
 })
 describe('/DELETE', () => {
+    let token = '';
+    beforeEach(async () => {
+        const userCredentials = {
+            username: 'johnk',
+            password: 'my-password'
+        }
+
+        const loggedUser = await api
+            .post('/api/login')
+            .send(userCredentials)
+        token = loggedUser.body.token
+    })
+
     test('blogs/:id should delete a single blog', async () => {
         const blogsBeforeDeleting = await blogsInDB()
         const blogToDelete = blogsBeforeDeleting[0]
 
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(204)
 
         const blogsAfterDeleting = await blogsInDB()
