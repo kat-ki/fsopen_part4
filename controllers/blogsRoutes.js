@@ -30,6 +30,9 @@ blogsRouter.post('/', middleware.extractUser, async (request, response, next) =>
         if (!blog.title || !blog.url) {
             response.status(400).json({error: 'Title or URL is missing'});
         }
+        if (!user) {
+            return response.status(403).json({error: 'user missing'})
+        }
 
         const newBlog = await blog.save()
         user.blogs = user.blogs.concat(newBlog._id)
@@ -45,13 +48,20 @@ blogsRouter.delete('/:id', middleware.extractUser, async (request, response, nex
     try {
         const user = request.user
         const blog = await Blog.findById(request.params.id)
-
+        if (!blog) {
+            return response.status(204).end()
+        }
         if (blog.user.toString() !== user._id.toString()) {
-            return response.status(401).json({error: 'only the creator can delete this blog'})
+            return response.status(403).json({error: 'user not authorized'})
         }
 
         await Blog.findByIdAndDelete(request.params.id)
         response.status(204).end()
+        //from solution below
+       /* await blog.deleteOne()
+        user.blogs = user.blogs.filter(b => b._id.toString() !== blog._id.toString())
+        await user.save()
+        response.status(204).end()*/
     } catch (error) {
         next(error)
     }
@@ -67,8 +77,9 @@ blogsRouter.put('/:id', async (request, response, next) => {
         likes: body.likes
     }
     try {
-        const updatedBlogItem = await Blog.findByIdAndUpdate(request.params.id, blogItem, {new: true})
+        const updatedBlogItem = await Blog.findByIdAndUpdate(request.params.id, blogItem, {new: true}).populate('user', 'name')
         response.json(updatedBlogItem)
+        console.log(updatedBlogItem)
     } catch (error) {
         next(error)
     }
