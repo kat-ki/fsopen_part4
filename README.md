@@ -23,3 +23,4 @@ by users who created that blogs. Token authentication using JWT is also availabl
 - DELETE /api/users/:id:
   Delete a specific user by ID. 
 - POST /api/login: Log in feature incl. validation
+- POST /api/blogs/:id/comments: Adding comments to blogs
