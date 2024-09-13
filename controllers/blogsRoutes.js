@@ -46,7 +46,6 @@ blogsRouter.post('/', middleware.extractUser, async (request, response, next) =>
 blogsRouter.post('/:id/comments', async (request, response, next) => {
     const {id} = request.params;
     const comment = request.body;
-    console.log(comment)
 
     try {
         const blog = await Blog.findById(id);
