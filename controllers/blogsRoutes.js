@@ -46,16 +46,13 @@ blogsRouter.post('/', middleware.extractUser, async (request, response, next) =>
 blogsRouter.post('/:id/comments', async (request, response, next) => {
     const {id} = request.params;
     const comment = request.body;
-
     try {
         const blog = await Blog.findById(id);
         if (!blog) {
             return response.status(404).json({error: 'Blog not found'});
         }
-
         blog.comments = blog.comments.concat(comment);
         await blog.save();
-
         response.status(201).json(blog);
     } catch (error) {
         next(error);
@@ -74,12 +71,7 @@ blogsRouter.delete('/:id', middleware.extractUser, async (request, response, nex
         }
 
         await Blog.findByIdAndDelete(request.params.id)
-        response.status(204).end()
-        //from solution below
-        /* await blog.deleteOne()
-         user.blogs = user.blogs.filter(b => b._id.toString() !== blog._id.toString())
-         await user.save()
-         response.status(204).end()*/
+        response.status(204).end();
     } catch (error) {
         next(error)
     }
